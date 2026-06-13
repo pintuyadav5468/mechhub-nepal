@@ -1,20 +1,25 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const path = require('path');
 const { Server } = require('socket.io');
 const { initDB } = require('./database');
+
+const IS_PROD = process.env.NODE_ENV === 'production';
+const PORT = process.env.PORT || 3002;
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'], credentials: true }
+  cors: IS_PROD ? {} : { origin: ['http://localhost:5173', 'http://localhost:5174'], credentials: true }
 });
 
 // userId (string) → socket instance
 const connectedUsers = new Map();
 
-const ALLOWED_ORIGINS = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
-app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
+if (!IS_PROD) {
+  app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'], credentials: true }));
+}
 app.use(express.json());
 
 // Make io + connectedUsers available in route handlers via req.app.get(...)
@@ -28,6 +33,17 @@ app.use('/api/users',     require('./routes/users'));
 app.use('/api/partners',  require('./routes/partners'));
 
 app.get('/api/health', (_, res) => res.json({ ok: true, service: 'MechHub Nepal API' }));
+
+// In production, serve the React build from ../client/dist
+if (IS_PROD) {
+  const buildPath = path.join(__dirname, '../client/dist');
+  app.use(express.static(buildPath));
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/socket.io')) {
+      res.sendFile(path.join(buildPath, 'index.html'));
+    }
+  });
+}
 
 io.on('connection', (socket) => {
   socket.on('register', (userId) => {
@@ -44,10 +60,10 @@ io.on('connection', (socket) => {
 
 async function main() {
   await initDB();
-  server.listen(3002, () => {
+  server.listen(PORT, () => {
     console.log('');
-    console.log('🔧 MechHub Nepal server running on http://localhost:3002');
-    console.log('   Health: http://localhost:3002/api/health');
+    console.log(`🔧 MechHub Nepal server running on port ${PORT}`);
+    console.log(`   Mode: ${IS_PROD ? 'production' : 'development'}`);
     console.log('');
   });
 }

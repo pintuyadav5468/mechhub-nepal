@@ -18,7 +18,8 @@ export function SocketProvider({ children }) {
       return
     }
 
-    const socket = io('http://localhost:3002', { transports: ['websocket', 'polling'] })
+    const socketUrl = import.meta.env.PROD ? window.location.origin : 'http://localhost:3002'
+    const socket = io(socketUrl, { transports: ['websocket', 'polling'] })
     socketRef.current = socket
 
     socket.on('connect', () => {
