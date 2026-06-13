@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    @apply bg-mh-surface text-mh-text font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  input, textarea, select { @apply outline-none; }
+}
+
+@layer components {
+  /* Mobile app container — centered on desktop, full on mobile */
+  .app-shell {
+    @apply max-w-sm mx-auto min-h-screen bg-mh-bg relative overflow-x-hidden;
+    box-shadow: 0 0 60px rgba(0,0,0,0.10);
+  }
+
+  /* Scrollable content area above bottom nav */
+  .page-content {
+    @apply pb-24 overflow-y-auto;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-mh-bg rounded-2xl shadow-card border border-mh-border;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-mh-accent hover:bg-mh-accent-hover active:scale-95 text-white font-semibold
+           py-3.5 px-6 rounded-xl transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed
+           flex items-center justify-center gap-2;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply bg-mh-surface hover:bg-mh-surface2 active:scale-95 text-mh-text font-semibold
+           py-3.5 px-6 rounded-xl border border-mh-border transition-all duration-150
+           flex items-center justify-center gap-2;
+  }
+
+  /* Danger button */
+  .btn-danger {
+    @apply bg-mh-danger hover:bg-red-600 active:scale-95 text-white font-semibold
+           py-3.5 px-6 rounded-xl transition-all duration-150
+           flex items-center justify-center gap-2;
+  }
+
+  /* Input */
+  .input {
+    @apply w-full bg-mh-surface border border-mh-border rounded-xl px-4 py-3
+           text-mh-text placeholder:text-mh-text3 focus:border-mh-accent focus:ring-2
+           focus:ring-mh-accent/20 transition-all text-sm;
+  }
+
+  /* Label */
+  .label {
+    @apply block text-xs font-medium text-mh-text2 mb-1.5 uppercase tracking-wide;
+  }
+
+  /* Status badge */
+  .badge {
+    @apply inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full;
+  }
+
+  /* Bottom nav */
+  .bottom-nav {
+    @apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-sm
+           bg-mh-bg border-t border-mh-border flex items-center z-40;
+    padding-bottom: env(safe-area-inset-bottom, 12px);
+  }
+
+  /* SOS pulse animation rings */
+  .sos-ring {
+    @apply absolute inset-0 rounded-full bg-mh-danger/20 animate-ping-slow;
+  }
+}
+
+@layer utilities {
+  .safe-top { padding-top: env(safe-area-inset-top, 0px); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
+
+  /* Radar animation for mechanic searching */
+  @keyframes radar-sweep {
+    0%   { transform: rotate(0deg); opacity: 0.7; }
+    100% { transform: rotate(360deg); opacity: 0.7; }
+  }
+  .radar-sweep {
+    animation: radar-sweep 2s linear infinite;
+    transform-origin: center;
+  }
+
+  @keyframes radar-ring {
+    0%   { transform: scale(0.3); opacity: 0.8; }
+    100% { transform: scale(1);   opacity: 0; }
+  }
+  .radar-ring { animation: radar-ring 2s ease-out infinite; }
+  .radar-ring-delay-1 { animation-delay: 0.6s; }
+  .radar-ring-delay-2 { animation-delay: 1.2s; }
+}
