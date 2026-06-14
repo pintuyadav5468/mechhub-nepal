@@ -67,7 +67,9 @@ let db = null;
 
 async function initDB() {
   const initSqlJs = require('sql.js');
-  const SQL = await initSqlJs();
+  const SQL = await initSqlJs({
+    locateFile: file => path.join(__dirname, 'node_modules/sql.js/dist', file)
+  });
 
   let sqlDb;
   if (fs.existsSync(DB_PATH)) {
